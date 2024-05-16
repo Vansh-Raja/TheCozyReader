@@ -1,48 +1,35 @@
 import google.generativeai as genai 
 from dotenv import load_dotenv
 import os
+import yaml
 
 # Loading the .env file
 load_dotenv()
+
+# Load the configuration from the YAML file
+with open('config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
 
 # Setting the Gemini API Key from .env 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Setting up the model
-generation_config = {
-	"temperature": 0.5,
-	"top_p": 1,
-	"top_k": 1,
-	"max_output_tokens": 500, 
-}
+# Access the configurations
+generation_config = config['generation_config']
+safety_settings = config['safety_settings']
 
-# Setting up the safety settings
-safety_settings = [
-	{
-	"category": "HARM_CATEGORY_HARASSMENT",
-	"threshold": "BLOCK_NONE",
-	},
-	{
-	"category": "HARM_CATEGORY_HATE_SPEECH",
-	"threshold": "BLOCK_NONE",
-	},
-	{
-	"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-	"threshold": "BLOCK_NONE",
-	},
-	{
-	"category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-	"threshold": "BLOCK_NONE",
-	},
-]
+# Print to verify
+print("Generation Config:", generation_config)
+print("Safety Settings:", safety_settings)
 
+# Creating a Generative Model
 model = genai.GenerativeModel(
 	model_name="gemini-1.0-pro",
 	safety_settings=safety_settings,
 	generation_config=generation_config,
 )
 
+# Starting a chat session with gemini
 chat = model.start_chat()
 
 # Implementing a simple chat option to start
