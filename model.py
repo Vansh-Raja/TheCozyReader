@@ -27,15 +27,15 @@ def initialise_model():
         generation_config=generation_config,
     )
     
-    return model
+    # Starting a chat session with gemini
+    chat = model.start_chat()
+    
+    return chat
 
 # just a simple test function to test out gemini with chat
 def chat_with_gemini():
     
-    model = initialise_model()
-    
-    # Starting a chat session with gemini
-    chat = model.start_chat()
+    chat = initialise_model()
     
     # Implementing a simple chat option to start
     while True:
