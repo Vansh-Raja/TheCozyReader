@@ -1,0 +1,6 @@
+- Add cloned voice options
+- Add option to save a generated story
+- Add better classification of keywords
+    - Add Langchain to add better prompts
+- Add a timer to show how much time it took to generate the voice
+- Add option for custom names in the story

@@ -11,6 +11,7 @@ def make_story(keywords) -> str:
     The story should be crafted to captivate a child's imagination and be suitable for reading aloud using a text-to-speech (TTS) model.
     Please ensure the story is lighthearted and soothing to help the child relax and prepare for sleep.
     Additionally, use simple names that are easy for a TTS model to pronounce.
+    DONT GIVE ANY ADDITIONAL NOTES, JUST THE STORY.
     """
 
     chat.send_message(initialising_prompt)

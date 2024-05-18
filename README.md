@@ -1,2 +1,2 @@
 # TheCozyReader
-An AI Bedtime story reader
+An AI Bedtime story teller
