@@ -3,5 +3,6 @@ python-dotenv
 pyyaml
 streamlit
 tts
+python-espeak
 
 # Be sure to add your GOOGLE_API_KEY to the .env file
