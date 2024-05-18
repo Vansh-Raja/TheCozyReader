@@ -1,5 +1,6 @@
 import streamlit as st
 import cozyreader
+import os
 
 # Setting the device for tts model
 device = "cpu"
@@ -158,6 +159,15 @@ CozyReader is a project that aims to generate bedtime stories for children using
 
 with st.expander(label="About the project"):
     st.markdown(about_Project)
+    
+with st.expander(label="TODO list of Upcoming Features"):
+    # Read the contents of the TODO.md file
+    todo_file_path = os.path.join(os.path.dirname(__file__), "TODO.md")
+    with open(todo_file_path, "r") as todo_file:
+        todo_contents = todo_file.read()
+
+    # Display the contents in Streamlit
+    st.markdown(todo_contents)
 
 st.divider()
 st.markdown("<p style='text-align: center;'>Made with ❤️ by <a href='https://github.com/Vansh-Raja'>Vansh Raja</a></p>", unsafe_allow_html=True)
