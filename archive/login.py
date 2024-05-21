@@ -4,6 +4,7 @@ import yaml
 from yaml.loader import SafeLoader
 from streamlit_authenticator.utilities.exceptions import LoginError
 
+
 st.set_page_config(page_title="CozyReader", page_icon=":musical_score:", layout="centered")
 st.markdown("<h1 style='text-align: center; color: white;'>CozyReader 📖</h1>", unsafe_allow_html=True)
 st.divider()
@@ -31,10 +32,9 @@ if st.session_state.authentication_status:
     
     st.toast(f"Welcome {st.session_state.name}! You have successfully logged in.", icon="🎊")
 
-    
-    
-    flag = st.button("Logout", use_container_width=True)
-    if flag:
+
+    # logout button
+    if st.button("Logout", use_container_width=True):
         authenticator.logout(location="unrendered")
 
 elif st.session_state.authentication_status == False:
