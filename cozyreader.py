@@ -1,5 +1,6 @@
 import model as gem
 from TTS.api import TTS
+import re
 
 device = "cpu"
 
@@ -25,12 +26,26 @@ def make_story(character_keywords: list[str] , environment_keywords: list[str], 
     Please ensure the story is lighthearted and soothing to help the child relax and prepare for sleep.
 
     Please provide a title for the story at the top, and only give the title and story as output, nothing else.
+    The format of the output should be as follows:
+    Title: {Title of the story}
+    {Story}
     """
     
     chat.send_message(initialising_prompt)
 
     response = chat.send_message(f"Character Keywords: {character_keywords} \n Environment Keywords: {environment_keywords} \n Theme Keywords: {theme_keywords} \n Names: {name_list}")
-    return response.text
+    
+    # Extracting the title and story from the response
+    match = re.search(r'^Title: (.+)', response.text, re.MULTILINE)
+    
+    if match:
+        title = match.group(1)
+        story = re.sub(r'^Title: .+\n\n', '', response.text, 1, re.MULTILINE)
+    else:
+        title = "Untitled Story"
+        story = response.text
+    
+    return title,story
 
 def narrate_story(text: str, model_name: str) -> None:
     "Narrates the story using the provided TTS model"

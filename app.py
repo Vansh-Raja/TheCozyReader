@@ -1,7 +1,8 @@
 import streamlit as st
 import cozyreader
-import os
+import db
 
+import os
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
@@ -36,11 +37,20 @@ except LoginError as e:
 if st.session_state.authentication_status:
     # Validates if the user is logged in
     
+    # initialising the session state variables
     if "generated" not in st.session_state:
-        st.session_state.generated = False
-        
+        st.session_state.generated = False    
     if "story" not in st.session_state:
         st.session_state.story = None
+    if "story_title" not in st.session_state:
+        st.session_state.story_title = None
+        
+    def logout():
+        st.session_state.generated = False
+        st.session_state.story = None
+        st.session_state.story_title = None
+        authenticator.logout(location="unrendered")
+    
     
     def generate_story():
         st.session_state.generated = True
@@ -161,15 +171,18 @@ if st.session_state.authentication_status:
         
     if submit_button:
         with st.spinner("Generating story..."):
-            story = cozyreader.make_story(selected_char_keywords, selected_env_keywords, selected_theme_keywords, name_list)
+            title, story = cozyreader.make_story(selected_char_keywords, selected_env_keywords, selected_theme_keywords, name_list)
+            st.session_state.story_title = title
             st.session_state.story = story
         
     if st.session_state.generated:
-        st.markdown(st.session_state.story)
+        # Display the generated story if the story has been generated
+        
+        st.markdown(f"<h3>{st.session_state.story_title}</h3>", unsafe_allow_html=True)
+        st.write(st.session_state.story)
         st.divider()
         
     if submit_button:
-        
         try:
             # Run TTS  
             with st.spinner("Generating audio..."):
@@ -179,7 +192,7 @@ if st.session_state.authentication_status:
                 else:
                     speaker_wav = f"tts_clones/{clone_voice}.wav"
                     cozyreader.narrate_story_with_cloning(story, model_name, speaker_wav)    
-            
+                    
         except Exception as e:
             
             print(e)
@@ -187,12 +200,47 @@ if st.session_state.authentication_status:
             st.error("Please try generating again.")
         
     if st.session_state.generated:
+        # Show the audio player if the story has been generated
         
         st.text("Hear the story 🔊") 
         st.audio("tts_out/output.wav")
             
-    if st.button(label="Save the Story and Audio", key="save_story"):
-        st.write("Saving the story and audio...")
+        if st.button(label="Save the Story and Audio", key="save_story"):
+            st.write("Saving the story and audio...")
+            try:
+                if db.insert_story(username=st.session_state.username,
+                                   title=st.session_state.story_title,
+                                   story = st.session_state.story,
+                                   audio_file_path="tts_out/output.wav"):
+                    
+                    st.success("Story and audio saved successfully!")
+            except ValueError as e:
+                st.error(e)
+    
+    stories = db.retrieve_stories(username=st.session_state.username)
+    
+    st.divider()
+    
+    st.write("# Your Saved Stories:")
+    if stories:
+        # If there are stories saved, display them
+        with st.form(key="delete_form"):
+            
+            story_idx = 0
+            for story in stories:
+                st.markdown(f"#### {story_idx + 1}.  {story['title']}")
+                st.audio(story['audio_file'])
+                story_idx += 1
+                
+            # Story deletion
+            delIdx = st.number_input("Enter the index of the story you want to delete", min_value=1, max_value=len(stories), step=1)
+            delTitle = stories[delIdx - 1]['title']
+            delete_button = st.form_submit_button(label="Delete Story", on_click=db.delete_story, use_container_width=True, args = [st.session_state.username, delTitle])
+    else:
+        # If there are no stories saved, display a warning
+        st.warning("You have not saved any stories yet.")
+        
+       
 
     st.write(" ")    
     st.write(" ")    
@@ -207,24 +255,7 @@ if st.session_state.authentication_status:
 
     # logout button
     if st.button("Logout", use_container_width=True):
-        authenticator.logout(location="unrendered")
-        
-    about_Project = """
-    CozyReader is a project that aims to generate bedtime stories for children using keywords provided by the user.
-    """
-
-    with st.expander(label="About the project"):
-        st.markdown(about_Project)
-        
-    with st.expander(label="TODO list of Upcoming Features"):
-        # Read the contents of the TODO.md file
-        todo_file_path = os.path.join(os.path.dirname(__file__), "TODO.md")
-        with open(todo_file_path, "r") as todo_file:
-            todo_contents = todo_file.read()
-
-        # Display the contents in Streamlit
-        st.markdown(todo_contents)
-
+        logout()
 
 elif st.session_state.authentication_status == False:
     st.error("Username/password is incorrect")
@@ -232,7 +263,23 @@ elif st.session_state.authentication_status == False:
 elif st.session_state.authentication_status == None:
     st.warning("Please login to continue.")
 
-st.write(st.session_state)
 # Footer
+
+about_Project = """
+CozyReader is a project that aims to generate bedtime stories for children using keywords provided by the user.
+"""
+with st.expander(label="About the project"):
+    st.markdown(about_Project)
+    
+with st.expander(label="TODO list of Upcoming Features"):
+    # Read the contents of the TODO.md file
+    todo_file_path = os.path.join(os.path.dirname(__file__), "TODO.md")
+    with open(todo_file_path, "r") as todo_file:
+        todo_contents = todo_file.read()
+
+    # Display the contents in Streamlit
+    st.markdown(todo_contents)
+    
+# st.write(st.session_state)
 st.divider()
 st.markdown("<p style='text-align: center;'>Made with ❤️ by <a href='https://github.com/Vansh-Raja'>Vansh Raja</a></p>", unsafe_allow_html=True)

@@ -21,18 +21,17 @@ if db_name in couch:
 else:
     db = couch.create(db_name)
 
-def insert_user(username):
+def create_user(username:str):
     "Insert a new user."
     
     user = {
         '_id': username,
-        'username': username,
         'stories': []
     }
     db.save(user)
-    print(f'User {username} inserted.')
+    print(f'User {username} created.')
 
-def insert_story(username, title, content, audio_file_path):
+def insert_story(username:str, title:str, story:str, audio_file_path:str):
     "Insert a story for a given user."
     
     user = db.get(username)
@@ -42,16 +41,18 @@ def insert_story(username, title, content, audio_file_path):
         
         story = {
             'title': title,
-            'content': content,
+            'story': story,
             'audio_file': base64.b64encode(audio_data).decode('utf-8')
         }
         user['stories'].append(story)
         db.save(user)
-        return f'Story {title} inserted for user {username}.'
+        print(f'Story inserted for user {username}.')
+        return True
     else:
-        return f'User {username} not found.'
+        print(f'User {username} not found.')
+        raise ValueError(f'User {username} not found.')
 
-def retrieve_stories(username):
+def retrieve_stories(username:str):
     "Retrieve stories for a given user."
     
     user = db.get(username)
@@ -61,14 +62,14 @@ def retrieve_stories(username):
             audio_data = base64.b64decode(story['audio_file'])
             stories.append({
                 'title': story['title'],
-                'content': story['content'],
+                'story': story['story'],
                 'audio_file': audio_data
             })
         return stories
     else:
-        return f'User {username} not found.'
+        raise Exception(f'User {username} not found.')
 
-def delete_story(username, title):
+def delete_story(username:str, title:str):
     "Delete a story for a given user."
     
     user = db.get(username)
@@ -79,20 +80,9 @@ def delete_story(username, title):
             db.save(user)
             return f'Story {title} deleted for user {username}.'
         else:
-            return f'Story {title} not found for user {username}.'
+            raise Exception(f'Story {title} not found for user {username}.')
     else:
-        return f'User {username} not found.'
+        raise Exception(f'User {username} not found.')
 
-# Example usage
-insert_user('johnd')
-# print(result)
-# result = insert_story('johnd', 'First Story', 'This is the *Markdown* content of the first story.', 'path_to_your_audio_file.wav')
-# print(result)
-# stories = retrieve_stories('johnd')
-# for story in stories:
-#     print(f"Title: {story['title']}")
-#     print(f"Content: {story['content']}")
-#     with open(f'retrieved_{story["title"].replace(" ", "_")}.wav', 'wb') as f:
-#         f.write(story['audio_file'])
-# result = delete_story('johnd', 'First Story')
-# print(result)
+# create_user('rbriggs')
+
