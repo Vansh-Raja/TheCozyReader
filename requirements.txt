@@ -1,0 +1,9 @@
+google-generativeai
+python-dotenv
+pyyaml
+streamlit
+tts
+streamlit-authenticator
+CouchDB
+
+# Be sure to add your GOOGLE_API_KEY to the .env file
