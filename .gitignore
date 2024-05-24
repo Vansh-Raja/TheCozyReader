@@ -161,3 +161,7 @@ cython_debug/
 
 # Config just for coding in Google's new idx editor
 .idx/
+
+.config/
+tts_clones/
+tts_out/
