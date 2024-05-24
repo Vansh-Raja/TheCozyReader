@@ -17,7 +17,7 @@ st.set_page_config(page_title="CozyReader", page_icon=":musical_score:")
 st.markdown("<h1 style='text-align: center; color: white;'>CozyReader 📖</h1>", unsafe_allow_html=True)
 st.divider()
 
-with open('user_config.yaml') as file:
+with open('.config/user_config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 authenticator = stauth.Authenticate(

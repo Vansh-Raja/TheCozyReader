@@ -6,14 +6,14 @@ import yaml
 
 def initialise_model():
     # Loading the .env file
-    load_dotenv()
+    load_dotenv(dotenv_path=".config/.env")
 
     # Setting the Gemini API Key from .env 
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key=GOOGLE_API_KEY)
 
     # Load the configuration from the YAML file
-    with open('config.yaml', 'r') as file:
+    with open(".config/config.yaml", "r") as file:
         config = yaml.safe_load(file)
 
     # Access the configurations

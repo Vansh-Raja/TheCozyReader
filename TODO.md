@@ -6,3 +6,6 @@
 - [ ] Add Langchain to add better prompts
 - [ ] Add a timer to show how much time it took to generate the voice
 - [ ] Add Eleven Labs API key option
+
+DEV: 
+- [ ] Cleanup the folder structure

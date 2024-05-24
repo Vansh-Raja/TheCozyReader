@@ -3,7 +3,7 @@ import base64
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=".config/.env")
 
 # Set CouchDB username and password from .env file
 couchdb_user = os.getenv('COUCHDB_USER')
