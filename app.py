@@ -115,18 +115,17 @@ if st.session_state.authentication_status:
             selected_theme_keywords = ["None"]
 
         # Custom names for the story
-        flag_name = st.toggle("Use Custom Names?", value=False, help="If you want to use custom names for the characters in the story, you can enter them here. If left blank, random names will be used. [Upto 2 names only]")
+        st.subheader("Use Custom Names?", help="If you want to use custom names for the characters, enter them here or leave them blank to use random names.")
+        
         col1, col2 = st.columns(2)
         with col1:
-            name1 = st.text_input("Name 1", help="Enter the name of the first character",
-                                disabled=not flag_name)
+            name1 = st.text_input("Name 1", help="Enter the name of the first character")
             
         with col2:
-            name2 = st.text_input("Name 2", help="Enter the name of the second character",
-                                disabled=not flag_name)
+            name2 = st.text_input("Name 2", help="Enter the name of the second character")
 
-        # If the user doesn't want to use custom names or both names are empty, then set the name_list to UseRandom
-        if not flag_name or (not name1 and not name2):
+        # If the user doesn't want to use custom names i.e both names are empty, then set the name_list to UseRandom
+        if (not name1 and not name2):
             name_list = ["UseRandom"]
         # If only one name is provided, then set the name_list to that name
         elif not name2:
@@ -170,13 +169,16 @@ if st.session_state.authentication_status:
         model_name = tts_models[selected_model]
 
         # Options for Voice cloning
-        flag_cloning = st.toggle("Use Voice Cloning?", value=False, help="Note: This will make the generation time longer")
+        st.subheader("Voice Cloning Features (Beta)", help="Note: This will make the generation time longer")
         clone_voice = st.radio(label="Select Clone Voice",
-                            options=["Rosamund Pike"],
+                            options=["Don't use", "Rosamund Pike"],
                             horizontal=True,
-                            disabled=not flag_cloning,
                             help="Here you can use the voice of a celebrity to narrate the story. Currently, only Rosamund Pike is available.")
 
+        # Quick Fix, not ideal (removal of toggle)
+        if clone_voice == "Don't use":
+            flag_cloning = False
+        
         # Just to make sure that if the user unchecks the toggle, the clone_voice is set to None again
         if not flag_cloning:
             clone_voice = None
